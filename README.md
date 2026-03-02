@@ -10,7 +10,7 @@ Real-time multi-source news aggregator for the Lebanon–Israel conflict. Stream
 
 ![LEB Monitor Screenshot](docs/screenshot.png)
 
-> **Live demo:** _Coming soon_ — or run locally in under a minute (see [Getting Started](#getting-started)).
+> **Live demo:** [leb-news-monitor.vercel.app](https://leb-news-monitor.vercel.app/) — or run locally in under a minute (see [Getting Started](#getting-started)).
 
 ---
 
@@ -261,7 +261,7 @@ Preferences are stored in `localStorage` under the key `lebmon-feed-prefs`:
 | Components | shadcn/ui + Radix UI | latest |
 | Icons | Lucide React | 0.576 |
 | RSS Parsing | rss-parser | 3.13 |
-| Data Fetching | SWR | 2.4 |
+| Streaming | NDJSON via ReadableStream | — |
 | Fonts | Poppins + Noto Sans Arabic | Google Fonts |
 
 ---
