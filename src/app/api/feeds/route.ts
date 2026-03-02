@@ -41,24 +41,28 @@ const parser = new Parser<Record<string, unknown>, CustomItem>({
   },
 });
 
+function isAbsoluteHttpUrl(url: string): boolean {
+  return /^https?:\/\//i.test(url);
+}
+
 function extractImage(item: CustomItem): string | undefined {
   const mc = item["media:content"];
   if (mc) {
     const first = Array.isArray(mc) ? mc[0] : mc;
-    if (typeof first === "string") return first;
-    const url = first?.$?.url || first?.url;
-    if (url) return url;
+    if (typeof first === "string" && isAbsoluteHttpUrl(first)) return first;
+    const url = first && typeof first !== "string" ? (first.$?.url || first.url) : undefined;
+    if (url && isAbsoluteHttpUrl(url)) return url;
   }
 
   const mt = item["media:thumbnail"];
   if (mt) {
     const first = Array.isArray(mt) ? mt[0] : mt;
-    if (typeof first === "string") return first;
-    const url = first?.$?.url || first?.url;
-    if (url) return url;
+    if (typeof first === "string" && isAbsoluteHttpUrl(first)) return first;
+    const url = first && typeof first !== "string" ? (first.$?.url || first.url) : undefined;
+    if (url && isAbsoluteHttpUrl(url)) return url;
   }
 
-  if (item.enclosure?.url) {
+  if (item.enclosure?.url && isAbsoluteHttpUrl(item.enclosure.url)) {
     const t = item.enclosure.type || "";
     if (t.startsWith("image/") || /\.(jpe?g|png|webp|gif)/i.test(item.enclosure.url)) {
       return item.enclosure.url;
@@ -67,7 +71,7 @@ function extractImage(item: CustomItem): string | undefined {
 
   if (item.content) {
     const match = item.content.match(/<img[^>]+src=["']([^"']+)["']/i);
-    if (match?.[1]) return match[1];
+    if (match?.[1] && isAbsoluteHttpUrl(match[1])) return match[1];
   }
 
   return undefined;

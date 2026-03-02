@@ -8,8 +8,7 @@ Real-time multi-source news aggregator for the Lebanon–Israel conflict. Stream
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-<!-- Replace with an actual screenshot of the app running -->
-<!-- ![LEB Monitor Screenshot](docs/screenshot.png) -->
+![LEB Monitor Screenshot](docs/screenshot.png)
 
 > **Live demo:** _Coming soon_ — or run locally in under a minute (see [Getting Started](#getting-started)).
 

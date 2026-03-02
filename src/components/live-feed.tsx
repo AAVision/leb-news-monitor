@@ -22,7 +22,7 @@ interface SourceGroup {
 }
 
 export function LiveFeed() {
-  const { items: allItems, newIds, sources: sourceCount, errors, fetchedAt, isLoading, isStreaming } = useFeedStream();
+  const { items: allItems, newIds, sources: sourceCount, fetchedAt, isLoading, isStreaming } = useFeedStream();
 
   const { prefs, toggleSource, moveSource, syncSources } = useFeedPrefs();
 
@@ -215,22 +215,16 @@ export function LiveFeed() {
           </div>
         </div>
 
-        {errors.length > 0 && !isStreaming && (
-          <div className="px-4 py-1.5 bg-amber-500/5 border-t border-amber-500/20 text-[11px] text-amber-400/80 flex items-center gap-2">
-            <span className="font-medium">
-              {errors.length} feed(s) down
-            </span>
-            <span className="text-muted-foreground/50">|</span>
-            <span className="truncate">{errors[0]}</span>
-          </div>
-        )}
       </header>
 
       {/* ── Filter Bar ── */}
       <div className="shrink-0 border-b border-border/40 bg-secondary/10">
         {/* Category tabs */}
-        <div className="px-4 py-2 flex items-center gap-1">
+        <div className="px-4 py-2 flex items-center gap-1" role="tablist" aria-label="Filter by category">
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeCategory === "all"}
             onClick={() => handleCategoryChange("all")}
             className={`px-3 py-1 rounded-full text-[11px] font-medium tracking-wide transition-colors ${
               activeCategory === "all"
@@ -246,6 +240,9 @@ export function LiveFeed() {
 
           {CATEGORY_ORDER.map((cat) => (
             <button
+              type="button"
+              role="tab"
+              aria-selected={activeCategory === cat}
               key={cat}
               onClick={() => handleCategoryChange(cat)}
               className={`px-3 py-1 rounded-full text-[11px] font-medium tracking-wide transition-colors flex items-center gap-1.5 ${
@@ -279,6 +276,7 @@ export function LiveFeed() {
         <div className="px-4 pb-2 flex items-center gap-1.5 overflow-x-auto">
           {activeSource && (
             <button
+              type="button"
               onClick={() => handleSourceChange(null)}
               className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 transition-colors flex items-center gap-1"
             >
@@ -293,6 +291,8 @@ export function LiveFeed() {
             .filter((s) => activeCategory === "all" || s.category === activeCategory)
             .map((source) => (
               <button
+                type="button"
+                aria-pressed={activeSource === source.name}
                 key={source.name}
                 onClick={() => handleSourceChange(activeSource === source.name ? null : source.name)}
                 className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] transition-colors flex items-center gap-1 border ${
