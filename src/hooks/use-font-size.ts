@@ -1,36 +1,55 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 export type FontSize = "small" | "medium" | "large" | "xlarge";
 
 const SIZES: FontSize[] = ["small", "medium", "large", "xlarge"];
 const STORAGE_KEY = "lebmon-font-size";
 
+function getFontSizeSnapshot(): FontSize {
+  const stored = localStorage.getItem(STORAGE_KEY) as FontSize | null;
+  if (stored && SIZES.includes(stored)) return stored;
+  return "medium";
+}
+
+function getServerSnapshot(): FontSize {
+  return "medium";
+}
+
+let listeners: Array<() => void> = [];
+
+function subscribe(cb: () => void) {
+  listeners.push(cb);
+  return () => {
+    listeners = listeners.filter((l) => l !== cb);
+  };
+}
+
+function emitChange() {
+  for (const l of listeners) l();
+}
+
+function applyFontSize(size: FontSize) {
+  const root = document.documentElement;
+  for (const s of SIZES) root.classList.remove(`font-size-${s}`);
+  root.classList.add(`font-size-${size}`);
+}
+
 export function useFontSize() {
-  const [fontSize, setFontSizeState] = useState<FontSize>("medium");
+  const fontSize = useSyncExternalStore(subscribe, getFontSizeSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as FontSize | null;
-    if (stored && SIZES.includes(stored)) {
-      setFontSizeState(stored);
-    }
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    for (const size of SIZES) {
-      root.classList.remove(`font-size-${size}`);
-    }
-    root.classList.add(`font-size-${fontSize}`);
-    localStorage.setItem(STORAGE_KEY, fontSize);
+    applyFontSize(fontSize);
   }, [fontSize]);
 
   const cycleFontSize = useCallback(() => {
-    setFontSizeState((current) => {
-      const idx = SIZES.indexOf(current);
-      return SIZES[(idx + 1) % SIZES.length];
-    });
+    const current = getFontSizeSnapshot();
+    const idx = SIZES.indexOf(current);
+    const next = SIZES[(idx + 1) % SIZES.length];
+    localStorage.setItem(STORAGE_KEY, next);
+    applyFontSize(next);
+    emitChange();
   }, []);
 
   return { fontSize, cycleFontSize };

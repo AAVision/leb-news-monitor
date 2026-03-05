@@ -1,29 +1,46 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 type Theme = "light" | "dark";
 const STORAGE_KEY = "lebmon-theme";
 
-export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>("dark");
+function getThemeSnapshot(): Theme {
+  const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored === "light" || stored === "dark") {
-      setThemeState(stored);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setThemeState(prefersDark ? "dark" : "light");
-    }
-  }, []);
+function getServerSnapshot(): Theme {
+  return "dark";
+}
+
+let listeners: Array<() => void> = [];
+
+function subscribe(cb: () => void) {
+  listeners.push(cb);
+  return () => {
+    listeners = listeners.filter((l) => l !== cb);
+  };
+}
+
+function emitChange() {
+  for (const l of listeners) l();
+}
+
+export function useTheme() {
+  const theme = useSyncExternalStore(subscribe, getThemeSnapshot, getServerSnapshot);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 
-  const toggleTheme = () => setThemeState((t) => (t === "dark" ? "light" : "dark"));
+  const toggleTheme = useCallback(() => {
+    const next: Theme = getThemeSnapshot() === "dark" ? "light" : "dark";
+    localStorage.setItem(STORAGE_KEY, next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+    emitChange();
+  }, []);
 
   return { theme, toggleTheme };
 }

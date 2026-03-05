@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "lebmon-feed-prefs";
 
@@ -11,8 +11,9 @@ export interface FeedPrefs {
   hidden: Set<string>;
 }
 
+const DEFAULT_PREFS: FeedPrefs = { order: [], hidden: new Set() };
+
 function loadPrefs(): FeedPrefs {
-  if (typeof window === "undefined") return { order: [], hidden: new Set() };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { order: [], hidden: new Set() };
@@ -36,56 +37,77 @@ function savePrefs(prefs: FeedPrefs) {
   );
 }
 
-export function useFeedPrefs() {
-  const [prefs, setPrefs] = useState<FeedPrefs>({ order: [], hidden: new Set() });
+// Cache the snapshot so useSyncExternalStore gets a stable reference.
+// Only refresh when emitChange() is called after a mutation.
+let cachedSnapshot: FeedPrefs = DEFAULT_PREFS;
+let snapshotInitialized = false;
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    setPrefs(loadPrefs());
-  }, []);
+function getSnapshot(): FeedPrefs {
+  if (!snapshotInitialized) {
+    cachedSnapshot = loadPrefs();
+    snapshotInitialized = true;
+  }
+  return cachedSnapshot;
+}
+
+function getServerSnapshot(): FeedPrefs {
+  return DEFAULT_PREFS;
+}
+
+let listeners: Array<() => void> = [];
+
+function subscribe(cb: () => void) {
+  listeners.push(cb);
+  return () => {
+    listeners = listeners.filter((l) => l !== cb);
+  };
+}
+
+function emitChange() {
+  cachedSnapshot = loadPrefs();
+  for (const l of listeners) l();
+}
+
+export function useFeedPrefs() {
+  const prefs = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggleSource = useCallback((source: string) => {
-    setPrefs((prev) => {
-      const next = { order: [...prev.order], hidden: new Set(prev.hidden) };
-      if (next.hidden.has(source)) {
-        next.hidden.delete(source);
-      } else {
-        next.hidden.add(source);
-      }
-      savePrefs(next);
-      return next;
-    });
+    const current = loadPrefs();
+    const next = { order: [...current.order], hidden: new Set(current.hidden) };
+    if (next.hidden.has(source)) {
+      next.hidden.delete(source);
+    } else {
+      next.hidden.add(source);
+    }
+    savePrefs(next);
+    emitChange();
   }, []);
 
   const moveSource = useCallback((source: string, direction: "up" | "down") => {
-    setPrefs((prev) => {
-      const order = [...prev.order];
-      const idx = order.indexOf(source);
-      if (idx === -1) return prev;
+    const current = loadPrefs();
+    const order = [...current.order];
+    const idx = order.indexOf(source);
+    if (idx === -1) return;
 
-      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-      if (swapIdx < 0 || swapIdx >= order.length) return prev;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= order.length) return;
 
-      [order[idx], order[swapIdx]] = [order[swapIdx], order[idx]];
-      const next = { order, hidden: new Set(prev.hidden) };
-      savePrefs(next);
-      return next;
-    });
+    [order[idx], order[swapIdx]] = [order[swapIdx], order[idx]];
+    const next = { order, hidden: new Set(current.hidden) };
+    savePrefs(next);
+    emitChange();
   }, []);
 
-  /** Ensure all known sources are in the order list */
   const syncSources = useCallback((sources: string[]) => {
-    setPrefs((prev) => {
-      const existing = new Set(prev.order);
-      const newSources = sources.filter((s) => !existing.has(s));
-      if (newSources.length === 0 && prev.order.length === sources.length) return prev;
+    const current = loadPrefs();
+    const existing = new Set(current.order);
+    const newSources = sources.filter((s) => !existing.has(s));
+    if (newSources.length === 0 && current.order.length === sources.length) return;
 
-      // Keep existing order, append new sources at end
-      const order = [...prev.order.filter((s) => sources.includes(s)), ...newSources];
-      const next = { order, hidden: new Set([...prev.hidden].filter((s) => sources.includes(s))) };
-      savePrefs(next);
-      return next;
-    });
+    const order = [...current.order.filter((s) => sources.includes(s)), ...newSources];
+    const next = { order, hidden: new Set([...current.hidden].filter((s) => sources.includes(s))) };
+    savePrefs(next);
+    emitChange();
   }, []);
 
   return { prefs, toggleSource, moveSource, syncSources };

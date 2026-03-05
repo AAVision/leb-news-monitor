@@ -1,24 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 const DISMISSED_KEY = "lebmon-banner-dismissed-v1";
 
-export function AnnouncementBanner() {
-  const [visible, setVisible] = useState(false);
+function getIsDismissed(): boolean {
+  return localStorage.getItem(DISMISSED_KEY) === "1";
+}
 
-  useEffect(() => {
-    if (!localStorage.getItem(DISMISSED_KEY)) {
-      setVisible(true);
-    }
+function getServerSnapshot(): boolean {
+  return true; // hidden on server to avoid flash
+}
+
+let listeners: Array<() => void> = [];
+
+function subscribe(cb: () => void) {
+  listeners.push(cb);
+  return () => {
+    listeners = listeners.filter((l) => l !== cb);
+  };
+}
+
+export function AnnouncementBanner() {
+  const isDismissed = useSyncExternalStore(subscribe, getIsDismissed, getServerSnapshot);
+
+  const dismiss = useCallback(() => {
+    localStorage.setItem(DISMISSED_KEY, "1");
+    for (const l of listeners) l();
   }, []);
 
-  if (!visible) return null;
-
-  const dismiss = () => {
-    setVisible(false);
-    localStorage.setItem(DISMISSED_KEY, "1");
-  };
+  if (isDismissed) return null;
 
   return (
     <div className="shrink-0 bg-primary/10 border-b border-primary/20 px-3 py-2 sm:px-4 sm:py-2 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">

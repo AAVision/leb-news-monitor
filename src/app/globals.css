@@ -126,12 +126,6 @@
 }
 
 /* Font size presets */
-:root { --font-scale: 1; }
-.font-size-small { --font-scale: 0.875; }
-.font-size-medium { --font-scale: 1; }
-.font-size-large { --font-scale: 1.125; }
-.font-size-xlarge { --font-scale: 1.25; }
-
 .font-size-small .feed-title { font-size: 12px; }
 .font-size-medium .feed-title { font-size: 13px; }
 .font-size-large .feed-title { font-size: 15px; }
