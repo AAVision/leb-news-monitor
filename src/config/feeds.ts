@@ -74,7 +74,7 @@ export const RSS_FEEDS: FeedSource[] = [
   { name: "Lebanon Debate", url: "https://www.lebanondebate.com/rss", color: "#8b5cf6", category: "general" },
   { name: "Al Quds", url: "https://www.alquds.co.uk/feed/", color: "#004d40", category: "general" },
   { name: "Rai Al Youm", url: "https://raialyoum.com/feed/", color: "#1b5e20", category: "general" },
-  { name: "Lebanese Forces", url: "https://www.lebanese-forces.com/feed", color: "#c61c36", category: "general" },
+  { name: "Lebanese Forces", url: "https://www.lebanese-forces.com/feed/", color: "#c61c36", category: "general" },
   
 
   // English sources
