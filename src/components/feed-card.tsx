@@ -93,6 +93,7 @@ export const FeedCard = memo(function FeedCard({
                 <img
                   src={item.image}
                   alt=""
+                  loading="lazy"
                   className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                   onError={() => setImgError(true)}
                 />
