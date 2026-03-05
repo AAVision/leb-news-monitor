@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "LEB Monitor — Live Lebanon-Israel Conflict News Feed",
-    short_name: "LEBMON",
+    short_name: "LEBMONITOR",
     description:
       "Real-time multi-source news monitor aggregating 47+ RSS feeds for the Lebanon-Israel conflict",
     start_url: "/",

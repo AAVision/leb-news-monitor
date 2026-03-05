@@ -172,7 +172,7 @@ export function LiveFeed() {
             <div className="flex items-center gap-2">
               <div className="live-dot w-2 h-2 rounded-full bg-primary" />
               <h1 className="text-sm font-bold tracking-tight uppercase">
-                LEB<span className="text-primary">MON</span>
+                LEB<span className="text-primary">MONITOR</span>
               </h1>
             </div>
             {/* Subtitle: hidden on mobile to save space */}
