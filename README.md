@@ -7,7 +7,7 @@
   <img alt="LEB Monitor" src="https://img.shields.io/badge/LEB-MONITOR-ef4444?style=for-the-badge&labelColor=f5f5f8&color=ef4444">
 </picture>
 
-### Real-time conflict intelligence from 44+ sources — streamed to your browser in under 3 seconds
+### Real-time conflict intelligence from 45+ sources — streamed to your browser in under 3 seconds
 
 <br />
 
@@ -41,7 +41,7 @@
 
 The Lebanon–Israel conflict generates hundreds of articles daily across dozens of outlets in multiple languages. Keeping up means juggling browser tabs, Telegram channels, and Twitter threads — or missing critical updates entirely.
 
-**LEB Monitor solves this.** It aggregates **44 RSS feeds** from war correspondents, UN agencies, humanitarian orgs, and major news networks — in **Arabic and English** — into a single real-time stream. Articles arrive progressively via NDJSON as each source resolves. No waiting. No refreshing. No API keys.
+**LEB Monitor solves this.** It aggregates **45 RSS feeds** from war correspondents, UN agencies, humanitarian orgs, and major news networks — in **Arabic and English** — into a single real-time stream. Articles arrive progressively via NDJSON as each source resolves. No waiting. No refreshing. No API keys.
 
 <br />
 
@@ -52,7 +52,7 @@ The Lebanon–Israel conflict generates hundreds of articles daily across dozens
 <td width="50%">
 
 ### Progressive Streaming
-Feeds arrive via **NDJSON** as each source resolves — you see articles in under 3 seconds, not after all 44 sources finish. Built on native `ReadableStream`, not WebSockets or polling hacks.
+Feeds arrive via **NDJSON** as each source resolves — you see articles in under 3 seconds, not after all 45 sources finish. Built on native `ReadableStream`, not WebSockets or polling hacks.
 
 ### Dual-Language Intelligence
 Automatic **RTL/LTR detection** via Unicode range analysis. Arabic headlines render right-to-left with Tajawal; English content stays left-to-right with Poppins. Zero configuration.
@@ -120,7 +120,7 @@ Open **[localhost:3000](http://localhost:3000)** — articles start streaming im
 | Step | What Happens |
 |------|-------------|
 | **1. Mount** | `useFeedStream()` fires `GET /api/feeds` |
-| **2. Fetch** | API route fetches 44 feeds in parallel via `Promise.allSettled` |
+| **2. Fetch** | API route fetches 45 feeds in parallel via `Promise.allSettled` |
 | **3. Stream** | Each resolved feed is sanitized, parsed, and streamed as an NDJSON batch |
 | **4. Merge** | Client deduplicates by ID, sorts by `pubDate`, marks new items for animation |
 | **5. Render** | Responsive card grid with category/source filtering + infinite scroll |
@@ -134,7 +134,7 @@ Open **[localhost:3000](http://localhost:3000)** — articles start streaming im
 | Feature | Implementation |
 |---------|---------------|
 | Real-time streaming | NDJSON over `ReadableStream` — articles appear as each source resolves |
-| 44 RSS sources | War coverage, breaking news, analysis — Arabic + English |
+| 45 RSS sources | War coverage, breaking news, analysis — Arabic + English |
 | Auto-refresh | 30s polling with client-side deduplication and merge |
 | Infinite scroll | `IntersectionObserver` with 30-item pages |
 | Category filtering | War Focused / Breaking News / General tabs with live counts |
@@ -175,7 +175,7 @@ Streams newline-delimited JSON. Each line is a self-contained JSON object.
 { "type": "error", "source": "NNA", "message": "HTTP 503" }
 
 // After all sources are attempted:
-{ "type": "done", "sources": 44, "errors": [...], "fetchedAt": "2026-03-05T12:00:00Z" }
+{ "type": "done", "sources": 45, "errors": [...], "fetchedAt": "2026-03-05T12:00:00Z" }
 ```
 
 <details>
@@ -257,9 +257,9 @@ interface FeedItem {
 </details>
 
 <details>
-<summary><strong>General / Analysis — 16 sources</strong></summary>
+<summary><strong>General / Analysis — 17 sources</strong></summary>
 
-**Arabic:** Al Jazeera AR, Sky News Arabia, BBC Arabic, BBC AR Middle East, France 24 AR, DW Arabic, Annahar, Al Arabiya, Asharq Al-Awsat, Lebanon Debate, Al Quds, Rai Al Youm
+**Arabic:** Al Jazeera AR, Sky News Arabia, BBC Arabic, BBC AR Middle East, France 24 AR, DW Arabic, Annahar, Al Arabiya, Asharq Al-Awsat, Lebanon Debate, Al Quds, Rai Al Youm, Lebanese Forces
 
 **English:** Al-Monitor, The New Arab, Guardian Middle East, Foreign Policy
 
@@ -320,7 +320,7 @@ src/
 │   └── use-theme.ts               # Light / Dark preference
 │
 ├── config/
-│   └── feeds.ts                   # 44 RSS feed definitions + categories
+│   └── feeds.ts                   # 45 RSS feed definitions + categories
 │
 └── scripts/
     └── generate-changelog.ts      # Build-time git log → JSON
