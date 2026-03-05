@@ -143,7 +143,11 @@ async function fetchFeedXml(url: string): Promise<string> {
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const raw = await res.text();
-  return sanitizeXml(raw);
+  try {
+    return sanitizeXml(raw);
+  } catch {
+    return raw;
+  }
 }
 
 interface ParsedItem extends CustomItem {
