@@ -12,6 +12,7 @@ import { FeedCard, FeedCardSkeleton } from "./feed-card";
 import { FeedSettings } from "./feed-settings";
 import { ThemeToggle } from "./theme-toggle";
 import { AnnouncementBanner } from "./announcement-banner";
+import Link from "next/link";
 import { useFeedPrefs } from "@/hooks/use-feed-prefs";
 import { useFeedStream } from "@/hooks/use-feed-stream";
 
@@ -390,6 +391,7 @@ export function LiveFeed() {
       {/* ── Bottom status bar — hidden on mobile to maximize content space ── */}
       <footer className="hidden sm:flex shrink-0 px-4 py-1 border-t border-border/30 bg-secondary/10 items-center justify-between text-[9px] text-muted-foreground/40 uppercase tracking-widest">
         <span>Auto-refresh 30s</span>
+        <Link href="/changelog" className="hover:text-muted-foreground transition-colors">Changelog</Link>
         <span>LEB Monitor v1.0</span>
       </footer>
     </div>

@@ -53,19 +53,20 @@ export default function ChangelogPage() {
               <h2 className="sticky top-0 z-10 bg-background py-2 text-sm font-semibold text-primary border-b border-border">
                 {formatDate(date)}
               </h2>
-              <ul className="mt-3 space-y-2">
+              <div className="mt-3 space-y-3">
                 {changelog[date].map((entry) => (
-                  <li key={entry.hash} className="flex items-start gap-3 text-sm">
-                    <code className="shrink-0 font-mono text-xs text-muted-foreground pt-0.5">
-                      {entry.hash}
-                    </code>
-                    <span className="flex-1">{entry.subject}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      {entry.author}
-                    </span>
-                  </li>
+                  <div
+                    key={entry.hash}
+                    className="rounded-lg border border-border bg-card p-4 shadow-sm"
+                  >
+                    <p className="text-sm text-card-foreground">{entry.subject}</p>
+                    <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                      <code className="font-mono">{entry.hash}</code>
+                      <span>{entry.author}</span>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </section>
           ))}
         </div>
