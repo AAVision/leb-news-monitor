@@ -12,12 +12,12 @@ function getServerSnapshot(): boolean {
   return true; // hidden on server to avoid flash
 }
 
-let listeners: Array<() => void> = [];
+const listeners = new Set<() => void>();
 
 function subscribe(cb: () => void) {
-  listeners.push(cb);
+  listeners.add(cb);
   return () => {
-    listeners = listeners.filter((l) => l !== cb);
+    listeners.delete(cb);
   };
 }
 
@@ -26,7 +26,7 @@ export function AnnouncementBanner() {
 
   const dismiss = useCallback(() => {
     localStorage.setItem(DISMISSED_KEY, "1");
-    for (const l of listeners) l();
+    listeners.forEach((l) => l());
   }, []);
 
   if (isDismissed) return null;
@@ -43,6 +43,8 @@ export function AnnouncementBanner() {
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+              title="Visit LEB Monitor official website"
+              aria-label="Visit LEB Monitor official website at lebmonitor.com"
             >
               lebmonitor.com
             </a>
@@ -55,6 +57,8 @@ export function AnnouncementBanner() {
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary underline underline-offset-2"
+              title="Visit LEB Monitor official website"
+              aria-label="Visit LEB Monitor at lebmonitor.com"
             >
               lebmonitor.com
             </a>
